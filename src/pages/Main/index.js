@@ -12,6 +12,7 @@ export default class Main extends Component {
     newRepo: '',
     repositories: [],
     loading: false,
+    notFound: false,
   };
 
   componentDidMount() {
@@ -41,21 +42,33 @@ export default class Main extends Component {
 
     this.setState({ loading: true });
 
-    const response = await api.get(`/repos/${newRepo}`);
+    if (repositories.includes(newRepo)) {
+      throw new Error('Repositório duplicado');
+    }
 
-    const data = {
-      name: response.data.full_name,
-    };
+    try {
+      const response = await api.get(`/repos/${newRepo}`);
 
-    this.setState({
-      repositories: [...repositories, data],
-      newRepo: '',
-      loading: false,
-    });
+      const data = {
+        name: response.data.full_name,
+      };
+
+      this.setState({
+        repositories: [...repositories, data],
+        newRepo: '',
+        loading: false,
+        notFound: false,
+      });
+    } catch (err) {
+      this.setState({
+        notFound: true,
+        loading: false,
+      });
+    }
   };
 
   render() {
-    const { newRepo, loading, repositories } = this.state;
+    const { newRepo, loading, repositories, notFound } = this.state;
 
     return (
       <Container>
@@ -63,7 +76,7 @@ export default class Main extends Component {
           <FaGithubAlt />
           Respositórios
         </h1>
-        <Form onSubmit={this.handleSubmit}>
+        <Form onSubmit={this.handleSubmit} notFound={notFound}>
           <input
             type="text"
             placeholder="Adicionar repositório"

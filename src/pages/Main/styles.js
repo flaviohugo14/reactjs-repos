@@ -1,16 +1,31 @@
 import styled, { keyframes, css } from 'styled-components';
 
-export const Form = styled.form`
+export const Form = styled.form.attrs(props => ({
+  notFound: props.notFound,
+}))`
   margin-top: 30px;
   display: flex;
   flex-direction: row;
 
-  input {
-    flex: 1;
-    border: 1px solid #eee;
-    padding: 10px 15px;
-    font-size: 16px;
-  }
+  ${props =>
+    props.notFound
+      ? css`
+          input {
+            flex: 1;
+            border: 1px solid #f22;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+            padding: 10px 15px;
+            font-size: 16px;
+          }
+        `
+      : css`
+          input {
+            flex: 1;
+            border: 1px solid #eee;
+            padding: 10px 15px;
+            font-size: 16px;
+          }
+        `}
 `;
 
 const rotate = keyframes`
