@@ -42,11 +42,13 @@ export default class Main extends Component {
 
     this.setState({ loading: true });
 
-    if (repositories.includes(newRepo)) {
-      throw new Error('Repositório duplicado');
-    }
+    const repositoriesName = repositories.map(repository => repository.name);
 
     try {
+      if (repositoriesName.includes(newRepo)) {
+        throw new Error('Repositório duplicado');
+      }
+
       const response = await api.get(`/repos/${newRepo}`);
 
       const data = {
@@ -64,6 +66,7 @@ export default class Main extends Component {
         notFound: true,
         loading: false,
       });
+      console.log(err);
     }
   };
 
