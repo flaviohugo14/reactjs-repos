@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList } from './styles';
+import { Loading, Owner, IssueList, IssueFilter } from './styles';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -20,7 +20,6 @@ export default class Repository extends Component {
     issues: [],
     loading: true,
     status: 'all',
-    newStatus: '',
   };
 
   async componentDidMount() {
@@ -47,31 +46,12 @@ export default class Repository extends Component {
     });
   }
 
-  handleStatus = async e => {
-    this.setState({ newStatus: e.target.value });
-
-    const { status, newStatus } = this.state;
-
-    const { match } = this.props;
-
-    const repoName = decodeURIComponent(match.params.repository);
-
-    if (status !== newStatus) {
-      this.setState({ status: newStatus });
-      const issues = await api.get(`/repos/${repoName}/issues`, {
-        params: {
-          state: newStatus,
-          per_page: 5,
-        },
-      });
-
-      this.setState({ issues: issues.data });
-    }
+  handleStatus = status => {
+    this.setState({ status });
   };
 
   render() {
-    const { repository, issues, loading, status } = this.state;
-
+    const { repository, issues, loading } = this.state;
     if (loading) {
       return <Loading>Carregando</Loading>;
     }
@@ -84,12 +64,18 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
-        <select value={status} onChange={this.handleStatus}>
-          <option value="all">Todas</option>
-          <option value="closed">Fechadas</option>
-          <option value="open">Abertas</option>
-        </select>
         <IssueList>
+          <IssueFilter>
+            <button type="button">Todos</button>
+            <button type="button">Abertos</button>
+            <button
+              type="button"
+              status="closed"
+              onClick={status => this.handleStatus(status)}
+            >
+              Fechados
+            </button>
+          </IssueFilter>
           {issues.map(issue => (
             <li key={String(issue.id)}>
               <img src={issue.user.avatar_url} alt={issue.user.login} />

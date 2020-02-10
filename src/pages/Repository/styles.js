@@ -100,3 +100,31 @@ export const IssueList = styled.ul`
     }
   }
 `;
+
+export const IssueFilter = styled.div`
+  display: flex;
+  flex-direction: row;
+  max-width: 200px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 25px;
+
+  button {
+    background: #7159c1;
+    border: 1px solid #eee;
+    padding: 5px 15px;
+    margin-left: 10px;
+    border-radius: 4px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+
+    &:hover {
+      color: #7159c1;
+      background: #fff;
+      border: 1px solid #7159c1;
+    }
+  }
+`;
