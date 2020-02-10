@@ -19,6 +19,8 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
+    status: 'all',
+    newStatus: '',
   };
 
   async componentDidMount() {
@@ -26,11 +28,13 @@ export default class Repository extends Component {
 
     const repoName = decodeURIComponent(match.params.repository);
 
+    const { status } = this.state;
+
     const [repository, issues] = await Promise.all([
       api.get(`/repos/${repoName}`),
       api.get(`/repos/${repoName}/issues`, {
         params: {
-          state: 'open',
+          state: status,
           per_page: 5,
         },
       }),
@@ -43,8 +47,30 @@ export default class Repository extends Component {
     });
   }
 
+  handleStatus = async e => {
+    this.setState({ newStatus: e.target.value });
+
+    const { status, newStatus } = this.state;
+
+    const { match } = this.props;
+
+    const repoName = decodeURIComponent(match.params.repository);
+
+    if (status !== newStatus) {
+      this.setState({ status: newStatus });
+      const issues = await api.get(`/repos/${repoName}/issues`, {
+        params: {
+          state: newStatus,
+          per_page: 5,
+        },
+      });
+
+      this.setState({ issues: issues.data });
+    }
+  };
+
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, status } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -58,7 +84,11 @@ export default class Repository extends Component {
           <h1>{repository.name}</h1>
           <p>{repository.description}</p>
         </Owner>
-
+        <select value={status} onChange={this.handleStatus}>
+          <option value="all">Todas</option>
+          <option value="closed">Fechadas</option>
+          <option value="open">Abertas</option>
+        </select>
         <IssueList>
           {issues.map(issue => (
             <li key={String(issue.id)}>
