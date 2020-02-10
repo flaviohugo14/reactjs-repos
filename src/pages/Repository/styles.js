@@ -42,7 +42,7 @@ export const Owner = styled.header`
 `;
 
 export const IssueList = styled.ul`
-  padding-top: 30px;
+  padding-top: 10px;
   margin-top: 30px;
   border-top: 1px solid #eee;
   list-style: none;
@@ -104,27 +104,30 @@ export const IssueList = styled.ul`
 export const IssueFilter = styled.div`
   display: flex;
   flex-direction: row;
-  max-width: 200px;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 25px;
+  align-items: center;
 
   button {
-    background: #7159c1;
-    border: 1px solid #eee;
-    padding: 5px 15px;
-    margin-left: 10px;
+    border: 1px solid #fff;
     border-radius: 4px;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
     color: #fff;
-
-    &:hover {
-      color: #7159c1;
+    background-color: #7159c1;
+    padding: 5px 15px;
+    margin: 0 0.25rem;
+    &:nth-child(${props => props.active + 1}) {
       background: #fff;
+      color: #7159c1;
       border: 1px solid #7159c1;
     }
   }
+`;
+
+export const ContainerFilter = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 15px;
+  justify-content: space-between;
+
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
 `;

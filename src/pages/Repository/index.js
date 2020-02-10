@@ -1,10 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import { MdFilterList } from 'react-icons/md';
+
 import api from '../../services/api';
 
 import Container from '../../components/Container';
-import { Loading, Owner, IssueList, IssueFilter } from './styles';
+import {
+  Loading,
+  Owner,
+  IssueList,
+  IssueFilter,
+  ContainerFilter,
+} from './styles';
 
 export default class Repository extends Component {
   static propTypes = {
@@ -19,7 +27,12 @@ export default class Repository extends Component {
     repository: {},
     issues: [],
     loading: true,
-    status: 'all',
+    filters: [
+      { state: 'all', label: 'Todas', active: true },
+      { state: 'open', label: 'Abertas', active: false },
+      { state: 'closed', label: 'Fechadas', active: false },
+    ],
+    filterIndex: 0,
   };
 
   async componentDidMount() {
@@ -46,12 +59,31 @@ export default class Repository extends Component {
     });
   }
 
-  handleStatus = status => {
-    this.setState({ status });
+  loadIssues = async () => {
+    const { match } = this.props;
+    const { filters, filterIndex, page } = this.state;
+
+    const repoName = decodeURIComponent(match.params.repository);
+
+    const response = await api.get(`/repos/${repoName}/issues`, {
+      params: {
+        state: filters[filterIndex].state,
+        per_page: 5,
+        page,
+      },
+    });
+
+    this.setState({ issues: response.data });
+  };
+
+  handleFilterClick = async filterIndex => {
+    await this.setState({ filterIndex });
+    this.loadIssues();
   };
 
   render() {
-    const { repository, issues, loading } = this.state;
+    const { repository, issues, loading, filters, filterIndex } = this.state;
+
     if (loading) {
       return <Loading>Carregando</Loading>;
     }
@@ -65,17 +97,20 @@ export default class Repository extends Component {
           <p>{repository.description}</p>
         </Owner>
         <IssueList>
-          <IssueFilter>
-            <button type="button">Todos</button>
-            <button type="button">Abertos</button>
-            <button
-              type="button"
-              status="closed"
-              onClick={status => this.handleStatus(status)}
-            >
-              Fechados
-            </button>
-          </IssueFilter>
+          <ContainerFilter>
+            <MdFilterList size={20} color="#7159c1" />
+            <IssueFilter active={filterIndex}>
+              {filters.map((filter, index) => (
+                <button
+                  type="button"
+                  key={filter.label}
+                  onClick={() => this.handleFilterClick(index)}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </IssueFilter>
+          </ContainerFilter>
           {issues.map(issue => (
             <li key={String(issue.id)}>
               <img src={issue.user.avatar_url} alt={issue.user.login} />
