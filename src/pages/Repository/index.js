@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { MdFilterList } from 'react-icons/md';
+import { MdFilterList, MdNavigateNext, MdNavigateBefore } from 'react-icons/md';
 
 import api from '../../services/api';
 
@@ -12,6 +12,7 @@ import {
   IssueList,
   IssueFilter,
   ContainerFilter,
+  PageActions,
 } from './styles';
 
 export default class Repository extends Component {
@@ -33,6 +34,7 @@ export default class Repository extends Component {
       { state: 'closed', label: 'Fechadas', active: false },
     ],
     filterIndex: 0,
+    page: 1,
   };
 
   async componentDidMount() {
@@ -81,8 +83,23 @@ export default class Repository extends Component {
     this.loadIssues();
   };
 
+  handlePage = async action => {
+    const { page } = this.state;
+    await this.setState({
+      page: action === 'back' ? page - 1 : page + 1,
+    });
+    this.loadIssues();
+  };
+
   render() {
-    const { repository, issues, loading, filters, filterIndex } = this.state;
+    const {
+      repository,
+      issues,
+      loading,
+      filters,
+      filterIndex,
+      page,
+    } = this.state;
 
     if (loading) {
       return <Loading>Carregando</Loading>;
@@ -126,6 +143,24 @@ export default class Repository extends Component {
             </li>
           ))}
         </IssueList>
+        <PageActions>
+          {page < 2 ? (
+            <MdNavigateBefore size={30} color="#7159c1" disabled={page < 2} />
+          ) : (
+            <MdNavigateBefore
+              size={30}
+              color="#7159c1"
+              onClick={() => this.handlePage('back')}
+            />
+          )}
+
+          <span>Página {page}</span>
+          <MdNavigateNext
+            size={30}
+            color="#7159c1"
+            onClick={() => this.handlePage('next')}
+          />
+        </PageActions>
       </Container>
     );
   }

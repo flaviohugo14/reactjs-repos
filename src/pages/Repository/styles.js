@@ -131,3 +131,19 @@ export const ContainerFilter = styled.div`
   padding-bottom: 10px;
   border-bottom: 1px solid #eee;
 `;
+
+export const PageActions = styled.div.attrs(props => ({
+  disabled: props.disabled,
+}))`
+  padding-top: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  svg {
+    &[disabled] {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+  }
+`;
