@@ -70,7 +70,7 @@ export default class Repository extends Component {
     const response = await api.get(`/repos/${repoName}/issues`, {
       params: {
         state: filters[filterIndex].state,
-        per_page: 5,
+        per_page: 4,
         page,
       },
     });
@@ -115,7 +115,7 @@ export default class Repository extends Component {
         </Owner>
         <IssueList>
           <ContainerFilter>
-            <MdFilterList size={20} color="#7159c1" />
+            <MdFilterList size={22} color="#7159c1" />
             <IssueFilter active={filterIndex}>
               {filters.map((filter, index) => (
                 <button
